@@ -3,18 +3,14 @@
 		<view class="wrapper">
 			<view class="handBtn">
 				<image
-					@click="selectColorEvent"
-					:src="selectColor === 'black' ? '../../resources/images/color_black_selected.png' : '../../resources/images/color_black.png'"
+					@click="selectColorEvent('black','#1A1A1A')"
+					:src="selectColor === 'black' ? '/static/color_black_selected.png' : '/static/color_black.png'"
 					:class="[selectColor === 'black' ? 'color_select' : '', 'black-select']"
-					data-color="black"
-					data-color-value="#1A1A1A"
 				></image>
 				<image
-					@click="selectColorEvent"
-					:src="selectColor === 'red' ? '../../resources/images/color_red_selected.png' : '../../resources/images/color_red.png'"
+					@click="selectColorEvent('red','#ca262a')"
+					:src="selectColor === 'red' ? '/static/color_red_selected.png' : '/static/color_red.png'"
 					:class="[selectColor === 'red' ? 'color_select' : '', 'black-select']"
-					data-color="red"
-					data-color-value="#ca262a"
 				></image>
 				<button @click="retDraw" class="delBtn">重写</button>
 				<button @click="saveCanvasAsImg" class="saveBtn">保存</button>
@@ -29,7 +25,6 @@
 					@touchstart="uploadScaleStart"
 					@touchmove="uploadScaleMove"
 					@touchend="uploadScaleEnd"
-					@tap="mouseDown"
 					canvas-id="handWriting"
 				></canvas>
 			</view>
@@ -79,7 +74,6 @@ export default {
 				this.canvasHeight = rect.height;
 
 				/* 将canvas背景设置为 白底，不设置  导出的canvas的背景为透明 */
-				// console.log(this, 'hahah');
 				this.setCanvasBg('#fff');
 			})
 			.exec();
@@ -157,9 +151,7 @@ export default {
 				x: point.x,
 				y: point.y
 			});
-			// this.setData({
-			//   currentLine
-			// })
+
 			this.pointToLine(currentLine);
 		},
 		// 笔迹结束
@@ -179,9 +171,7 @@ export default {
 				x: point.x,
 				y: point.y
 			});
-			// this.setData({
-			//   currentLine
-			// })
+
 			if (currentLine.length > 2) {
 				var info = (currentLine[0].time - currentLine[currentLine.length - 1].time) / currentLine.length;
 				//$("#info").text(info.toFixed(2));
@@ -285,8 +275,6 @@ export default {
 					let a = this.ctaCalc(point[0].x, point[0].y, point[0].r, point[1].x, point[1].y, point[1].r, point[2].x, point[2].y, point[2].r);
 					a[0].color = this.lineColor;
 					// let bethelPoint = this.bethelPoint;
-					// console.log(a)
-					// console.log(this.bethelPoint)
 					// bethelPoint = bethelPoint.push(a);
 					this.bethelDraw(a, 1);
 					point = [{ x: x, y: y, r: r }];
@@ -370,11 +358,8 @@ export default {
 			}
 			ctx.draw(true);
 		},
-		selectColorEvent(event) {
-			console.log(event);
-			var color = event.currentTarget.dataset.colorValue;
-			var colorSelected = event.currentTarget.dataset.color;
-			this.selectColor = selectColor;
+		selectColorEvent(str,color) {
+			this.selectColor = str;
 			this.lineColor = color;
 		},
 		//将Canvas内容转成 临时图片 --> cb 为回调函数 形参 tempImgPath 为 生成的图片临时路径
@@ -400,8 +385,6 @@ export default {
 		},
 		//完成
 		subCanvas() {
-			// console.log(121);
-
 			this.ctx.draw(true, () => {
 				wx.canvasToTempFilePath({
 					canvasId: 'handWriting',
@@ -409,22 +392,13 @@ export default {
 					quality: 1, //图片质量
 					success(res) {
 						// console.log(res.tempFilePath, 'canvas生成图片地址');
-
-						wx.showModal({
-							title: '哈哈啊',
-							content: '这是什么'
-						});
-
 						wx.showToast({
 							title: '以保存'
 						});
-
 						//保存到系统相册
-
 						wx.saveImageToPhotosAlbum({
 							filePath: res.tempFilePath,
 							success(res) {
-								console.log(res, '保存res');
 								wx.showToast({
 									title: '已成功保存到相册',
 									duration: 2000
@@ -437,7 +411,6 @@ export default {
 		},
 		//保存到相册
 		saveCanvasAsImg() {
-			console.log(1212);
 
 			/*
 				this.canvasToImg( tempImgPath=>{
@@ -497,7 +470,6 @@ export default {
 		},
 		//上传
 		uploadCanvasImg() {
-			// console.log(999);
 
 			wx.canvasToTempFilePath({
 				canvasId: 'handWriting',
@@ -525,7 +497,7 @@ export default {
 		//设置canvas背景色  不设置  导出的canvas的背景为透明
 		//@params：字符串  color
 		setCanvasBg(color) {
-			console.log(999);
+
 			/* 将canvas背景设置为 白底，不设置  导出的canvas的背景为透明 */
 			//rect() 参数说明  矩形路径左上角的横坐标，左上角的纵坐标, 矩形路径的宽度, 矩形路径的高度
 			//这里是 canvasHeight - 4 是因为下边盖住边框了，所以手动减了写
@@ -660,7 +632,7 @@ page {
 .black-select.color_select {
 	width: 90rpx;
 	height: 90rpx;
-	top: 30rpx;
+	top: 100rpx;
 	left: 10rpx;
 }
 .red-select {
